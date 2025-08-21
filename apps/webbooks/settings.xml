@@ -7,4 +7,11 @@
       <mirrorOf>central</mirrorOf>
     </mirror>
   </mirrors>
+  <servers>
+    <server>
+      <id>github</id>
+      <username>${GITHUB_REPO_CRED_USR}</username>
+      <password>${GITHUB_REPO_CRED_PSW}</password>
+    </server>
+  </servers>
 </settings>

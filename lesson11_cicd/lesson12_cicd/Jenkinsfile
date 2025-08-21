@@ -1,0 +1,39 @@
+pipeline {
+    agent { label 'maven' }
+    environment {
+        GITHUB_REPO_CRED = credentials("github_cred")
+        GITHUB_REPO_OWNER = "levelup-devops"
+        GITHUB_REPO_NAME = "2025-07-example"
+        VERSION = "${env.BUILD_NUMBER}"
+    }
+    tools {
+        maven '3.2.5'
+    }
+
+
+    stages {
+        stage('Build') {
+            steps {
+                dir('apps/webbooks') {
+                    sh "mvn -DskipTests -s settings.xml clean package"
+                }
+            }
+
+            // post {
+            //     // If Maven was able to run the tests, even if some of the test
+            //     // failed, record the test results and archive the jar file.
+            //     success {
+            //         // junit '**/target/surefire-reports/TEST-*.xml'
+            //         archiveArtifacts '**/target/*.jar'
+            //     }
+            // }
+        }
+        stage('Release') {
+            steps {
+                dir('apps/webbooks') {
+                    sh "mvn -DskipTests -s settings.xml deploy"
+                }
+            }
+        }
+    }
+}
