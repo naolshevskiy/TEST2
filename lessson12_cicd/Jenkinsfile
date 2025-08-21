@@ -1,0 +1,50 @@
+pipeline {
+    agent { label 'maven' }
+
+    tools {
+        maven '3.2.5'
+    }
+
+    options {
+        disableConcurrentBuilds()
+        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')
+     }
+
+     environment {
+        GITHUB_REPO_CRED = credentials("github_cred")
+        GITHUB_REPO_OWNER = "levelup-devops"
+        GITHUB_REPO_NAME = "2025-07-example"
+        VERSION = "0.1.${env.BUILD_NUMBER}"
+     }
+
+    stages {    
+        stage("Build") {
+            steps {
+                dir('apps/webbooks') {
+                    sh "mvn -DskipTests -s settings.xml clean package"
+                }
+            }
+        }
+
+        stage("Test") {
+            steps {
+                dir('apps/webbooks') {
+                    sh "mvn -DDB.url=jdbc:postgresql://192.168.56.112:5432/webbooks test"
+                }
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                }
+            }
+        }
+
+        stage("Release") {
+            steps {
+                dir('apps/webbooks') {
+                    sh "mvn -DskipTests -s settings.xml deploy"
+                }
+            }
+        }
+    }
+}

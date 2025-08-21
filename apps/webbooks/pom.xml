@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>DigitalLibrary</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>DigitalLibrary</name>
+    <artifactId>digital-library</artifactId>
+    <version>${VERSION}</version>
+    <name>digital-library</name>
     <description>DigitalLibrary</description>
     <properties>
         <java.version>17</java.version>
@@ -93,5 +93,13 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+        <id>github</id>
+        <name>GitHub ${GITHUB_REPO_OWNER}</name>
+        <url>https://maven.pkg.github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}</url>
+        </repository>
+    </distributionManagement>
 
 </project>
