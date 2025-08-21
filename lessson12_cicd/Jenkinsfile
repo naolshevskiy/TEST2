@@ -40,6 +40,9 @@ pipeline {
         }
 
         stage("Release") {
+            when {
+                branch 'main'
+            }
             steps {
                 dir('apps/webbooks') {
                     sh "mvn -DskipTests -s settings.xml deploy"
