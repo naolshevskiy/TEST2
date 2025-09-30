@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: alpine-job
+spec:
+  completions: 4
+  parallelism: 2
+  ttlSecondsAfterFinished: 100
+  backoffLimit: 2
+  activeDeadlineSeconds: 60
+  template:
+    metadata:
+      name: alpine-sleep
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - image: alpine
+          name: alpine-sleep
+          command:
+            - 'sh'
+            - '-c'
+            - 'sleep 5'
+
+# completions — количество подов, успешное выполнение которых — залог завершенияJob. Значение по умолчанию: 1.
+# parallelism — количество подов, которые могут запуститься параллельно. Значение по умолчанию: 1.
+# ttlSecondsAfterFinished — время в секундах, по истечении которого Kubernetes удалит завершённый Job и связанные с ним поды. Это поле опционально: если его нет, Job и соответствующие поды не удалятся автоматически.
+# backoffLimit — число попыток повторного запуска задачи. Когда Job достигнет его, то перейдёт в статус Failed. Значение по умолчанию: 6.
+# activeDeadlineSeconds — время, отведённое на выполнение задания. Когда оно истечёт, Job перейдёт в статус Failed.
+# template — шаблон, на основе которого создаётся под.

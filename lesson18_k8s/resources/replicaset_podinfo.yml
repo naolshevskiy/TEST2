@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: podinfo
+  labels:
+    app: podinfo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: podinfo
+  template:
+    metadata:
+      labels:
+        app: podinfo
+    spec:
+      containers:
+      - image: ghcr.io/stefanprodan/podinfo:6.6.3
+        name: podinfo
+        command:
+          - ./podinfo
+          - '--port=9000'
+        ports:
+          - name: http
+            containerPort: 9000
+            protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo
+  namespace: default
+spec:
+  selector:
+    app: podinfo
+  type: ClusterIP
+  ports:
+  - name: podinfo
+    protocol: TCP
+    port: 9000
+    targetPort: 9000
