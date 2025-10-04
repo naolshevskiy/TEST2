@@ -9,7 +9,7 @@ pipeline {
         stage('Build and Test') {
             steps {
                 dir('apps/webbooks') {
-                    // ВСЕГДА даём права — даже если Git их не сохранил
+                   
                     sh 'chmod +x ./mvnw'
                     sh './mvnw -B clean package -DskipTests'
                 }
