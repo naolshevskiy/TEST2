@@ -1,45 +1,38 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+    tools {
+        jdk 'JDK17'        // ← то имя, что ты задал в Global Tool Configuration
+        maven 'Maven3'     // (опционально, если настроил Maven там же)
+    }
 
+    stages {
         stage('Build and Test') {
             steps {
                 dir('apps/webbooks') {
-                    sh 'chmod +x ./mvnw && ./mvnw clean package -DskipTests=false'
+                    sh './mvnw -B clean package'
                 }
             }
         }
 
-        stage('Publish Artifact and Trigger Deploy') {
+        stage('Deploy if main') {
             when {
                 branch 'main'
             }
             steps {
                 dir('apps/webbooks') {
-                    // Архивируем JAR из target/
                     archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
-
                 script {
-                    // Получаем имя JAR-файла
                     def jarName = sh(
-                        script: 'cd apps/webbooks && ls target/*.jar | xargs basename',
+                        script: 'basename apps/webbooks/target/*.jar',
                         returnStdout: true
                     ).trim()
-
-                    // Запускаем деплой-пайплайн
                     build job: 'webbooks-deploy',
-                          parameters: [
-                              string(name: 'JAR_FILE', value: jarName),
-                              string(name: 'BUILD_NUMBER', value: env.BUILD_NUMBER)
-                          ],
-                          wait: false
+                         parameters: [
+                             string(name: 'JAR_FILE', value: jarName)
+                         ],
+                         wait: false
                 }
             }
         }
