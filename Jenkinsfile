@@ -11,7 +11,7 @@ pipeline {
         stage('Build and Test') {
             steps {
                 dir('apps/webbooks') {
-                    sh './mvnw clean package -DskipTests=false'
+                    sh 'chmod +x ./mvnw && ./mvnw clean package -DskipTests=false'
                 }
             }
         }
